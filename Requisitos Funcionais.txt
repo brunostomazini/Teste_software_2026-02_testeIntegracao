@@ -1,0 +1,122 @@
+Requisitos Funcionais — Classe SalaService
+A classe SalaService deverá implementar as regras de negócio relacionadas ao gerenciamento de salas, utilizando os métodos disponibilizados por SalaDAO.
+
+1. Regras de validação
+As operações de cadastro e atualização deverão obedecer às regras descritas a seguir.
+
+RV01 — Validação do nome
+O nome da sala não poderá ser None, vazio ou composto exclusivamente por espaços em branco.
+
+Mensagem de erro:
+
+Nome da sala não pode estar em branco.
+RV02 — Validação do bloco
+O bloco não poderá ser None, vazio ou composto exclusivamente por espaços em branco.
+
+Mensagem de erro:
+
+Bloco não pode estar em branco.
+RV03 — Validação da capacidade
+A capacidade deverá ser um número inteiro, entre 1 e 100, inclusive.
+
+Valores decimais, booleanos, negativos ou superiores a 100 não deverão ser aceitos.
+
+Mensagem de erro:
+
+A capacidade deve ser um número inteiro entre 1 e 100.
+RV04 — Unicidade da sala
+Não poderá existir outra sala cadastrada com a mesma combinação de nome e bloco.
+
+Por exemplo, se existir uma sala denominada Sala 101 no bloco A, não será permitido cadastrar outra sala com esses mesmos dados.
+
+Entretanto, será permitido cadastrar a Sala 101 no bloco B.
+
+Mensagem de erro:
+
+A sala 'NOME' já está cadastrada no bloco 'BLOCO'.
+Os valores NOME e BLOCO deverão ser substituídos pelos dados informados na operação.
+
+Na atualização, uma sala poderá manter seu próprio nome e bloco. A validação de duplicidade somente deverá impedir a operação quando a combinação informada pertencer a outra sala.
+
+Importante: Todas as violações dessas regras deverão produzir uma exceção ValueError, contendo exatamente a mensagem correspondente.
+
+As validações deverão ocorrer na ordem RV01, RV02, RV03 e RV04.
+
+2. Operações funcionais
+RF01 — Cadastrar sala
+Método: cadastrar_sala(nome, bloco, capacidade)
+
+O sistema deverá permitir o cadastro de uma nova sala mediante o fornecimento de nome, bloco e capacidade.
+
+A operação deverá:
+
+Criar um objeto da classe Sala com os dados informados.
+Validar os dados conforme as regras RV01 a RV04.
+Consultar a existência de outra sala com o mesmo nome e bloco.
+Persistir a nova sala por meio do DAO.
+Retornar o objeto Sala cadastrado, contendo o identificador gerado pelo banco de dados.
+Caso alguma validação falhe, o cadastro não deverá ser realizado.
+
+Resultado esperado: Um objeto Sala com os atributos id, nome, bloco e capacidade preenchidos.
+
+RF02 — Buscar sala por identificador
+Método: buscar_por_id(id)
+
+O sistema deverá permitir a consulta de uma sala por seu identificador único.
+
+A operação deverá retornar o objeto Sala correspondente, caso exista.
+
+Caso nenhum registro seja encontrado, deverá lançar uma exceção ValueError com a mensagem:
+
+Sala com ID X não encontrada.
+O valor X deverá ser substituído pelo identificador informado.
+
+RF03 — Listar salas
+Método: listar_salas()
+
+O sistema deverá permitir a consulta de todas as salas cadastradas.
+
+A operação deverá retornar uma lista contendo os objetos da classe Sala.
+
+Caso não existam salas cadastradas, deverá retornar uma lista vazia.
+
+RF04 — Atualizar sala
+Método: atualizar_sala(id, nome, bloco, capacidade)
+
+O sistema deverá permitir a atualização dos dados de uma sala existente.
+
+A operação deverá:
+
+Criar um objeto da classe Sala com o identificador e os novos dados informados.
+Validar os dados conforme as regras RV01 a RV04.
+Verificar se a combinação de nome e bloco já pertence a outra sala.
+Encaminhar o objeto para o método de atualização do DAO.
+Atualizar os atributos nome, bloco e capacidade do registro correspondente.
+A sala poderá manter seu próprio nome e bloco sem que isso seja considerado duplicidade.
+
+Caso não exista uma sala com o identificador informado, deverá ser lançada uma exceção ValueError:
+
+Sala não encontrada para atualização.
+Resultado esperado: Os dados da sala deverão ser atualizados no banco de dados. O método não deverá retornar um objeto ou valor explícito.
+
+RF05 — Excluir sala
+Método: excluir_sala(id)
+
+O sistema deverá permitir a exclusão de uma sala por meio de seu identificador.
+
+A operação deverá encaminhar o identificador para o método de exclusão do DAO.
+
+Caso não exista uma sala com o identificador fornecido, deverá ser lançada uma exceção ValueError:
+
+Sala não encontrada para exclusão.
+Resultado esperado: O registro correspondente deverá ser removido do banco de dados. O método não deverá retornar um objeto ou valor explícito.
+
+RF06 — Encerrar acesso ao banco de dados
+Método: fechar()
+
+O sistema deverá permitir o encerramento da conexão com o banco de dados, delegando a operação ao método SalaDAO.fechar().
+
+RF07 — Injeção de dependência
+Método: __init__(dao=None)
+
+A classe SalaService deverá implementar o mecanismo de injeção de dependência, permitindo que uma instância de SalaDAO seja fornecida externamente por meio de seu construtor.
